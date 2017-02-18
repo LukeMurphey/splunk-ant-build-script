@@ -12,7 +12,7 @@
          ================================= -->
 	<target name="assemble_jar" depends="compile" description="Create Splunk helper JAR file">
 		<!-- Create the Java archive -->
-		<jar destfile="${build.jar_output}/splunkbuild.jar"
+		<jar destfile="${build.jar_output}/splunkdevtools.jar"
         	basedir="${build.java_output}" 
         />
 	</target>
