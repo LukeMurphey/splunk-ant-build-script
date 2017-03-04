@@ -16,6 +16,16 @@
         	basedir="${build.java_output}" 
         />
 	</target>
+
+	<!-- ================================= 
+          target: clean
+         ================================= -->
+	<target name="clean" description="Clean up the temporary directories">
+        <!-- Delete the temporary directory -->
+        <delete quiet="true" includeEmptyDirs="true">
+            <fileset dir="${build.java_output}" />
+        </delete>
+	</target>
 	
 	<!-- ================================= 
           target: compile
@@ -25,12 +35,6 @@
 		<mkdir dir="${build.java_output}" />
 		
 		<javac destdir="${build.java_output}" srcdir="src" includeantruntime="true">
-			
-			<classpath>
-				<fileset dir="lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
 			<compilerarg value="-Xlint:-path" />
 		</javac>
 		
