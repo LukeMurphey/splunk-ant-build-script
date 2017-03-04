@@ -60,7 +60,7 @@ public class SplunkRestart extends SplunkTask {
         try{
 
             // Do the restart
-            HttpURLConnection restartConnection = (HttpURLConnection) new URL("https://127.0.0.1:8089/services/server/control/restart").openConnection();
+            HttpURLConnection restartConnection = (HttpURLConnection) new URL(url + "/services/server/control/restart").openConnection();
             restartConnection.setRequestMethod("POST");
             String userCredentials = username + ":" + password;
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));

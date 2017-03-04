@@ -114,49 +114,6 @@ public class SplunkTask extends Task {
         return formKey;
      }
 
-    // TODO: Remove?
-    public String getFormKey2(String url) throws IOException, MalformedURLException, UnsupportedEncodingException{
-
-    	String formkey = null;
-    	
-        // Make sure cookies are on
-        CookieHandler.setDefault( new CookieManager( null, CookiePolicy.ACCEPT_ALL ) );
-    	
-        // Make the connection
-    	HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-    	
-    	List<String> cookies = connection.getHeaderFields().get("Set-Cookie");
-    	
-    	// Stop if we couldn't get a connection
-    	if(cookies == null){
-    		handleErrorOutput("Connection to Splunk failed");
-    		return "";
-    	}
-    	
-    	int responseCode = connection.getResponseCode();
-        
-        if(responseCode != 200){
-        	handleErrorOutput("Connection to Splunk failed (response code was " + responseCode + ")");
-        	return "";
-        }
-
-        // Get the cval from the cookie
-    	Pattern formKeyRegex = Pattern.compile("splunkweb_csrf_token_8000=([0-9]+)");
-    	
-    	for(int c = 0; c < cookies.size(); c++){
-    		
-    		// Get the cval value
-            log(cookies.get(c));
-        	Matcher m = formKeyRegex.matcher(cookies.get(c));
-        	
-            if (m.find()) {
-            	formkey = m.group(1);
-            }
-    	}
-        log("formkey" + formkey);
-        return formkey;
-    }
-
     /**
      * Output the result that came from an HTTP connection. This is useful when the response indicates a reason for the failure.
      */
