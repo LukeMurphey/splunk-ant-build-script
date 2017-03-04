@@ -52,17 +52,20 @@ public class SplunkRestart extends SplunkTask {
      */
     public void restartSplunk(String url, String username, String password) throws NoSuchAlgorithmException, ProtocolException, MalformedURLException, IOException, KeyManagementException {
 
+        log("Attempting to restart Splunk; username=" + username + ", url=" + url);
+
     	// Remove the trailing slash on the URL if necessary
         url = removeTrailingSlash(url);
     	
         installSSLValidator();
-
+        
         try{
 
             // Do the restart
             HttpURLConnection restartConnection = (HttpURLConnection) new URL(url + "/services/server/control/restart").openConnection();
             restartConnection.setRequestMethod("POST");
             String userCredentials = username + ":" + password;
+            
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
             restartConnection.setRequestProperty ("Authorization", basicAuth);
 

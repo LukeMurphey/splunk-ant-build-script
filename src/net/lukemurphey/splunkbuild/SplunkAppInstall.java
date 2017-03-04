@@ -63,6 +63,8 @@ public class SplunkAppInstall extends SplunkTask {
      */
     public void installApp(String app, String url, String username, String password) throws Exception {
 
+        log("Attempting to install app into Splunk; username=" + username + " package=" + app + ", url=" + url);
+
     	// Remove the trailing slash on the URL if necessary
         url = removeTrailingSlash(url);
     	

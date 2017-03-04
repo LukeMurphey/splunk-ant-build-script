@@ -52,6 +52,8 @@ public class SplunkWebBump extends SplunkTask {
      */
     public void bumpVersion(String url, String username, String password) throws Exception {
     	
+        log("Attempting to bump Splunk; username=" + username + ", url=" + url);
+
         installSSLValidator();
 
         try{
