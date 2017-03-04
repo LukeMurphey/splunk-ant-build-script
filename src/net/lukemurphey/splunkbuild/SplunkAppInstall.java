@@ -1,11 +1,11 @@
 package net.lukemurphey.splunkbuild;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.*;
 import java.util.Base64;
+
+import org.apache.tools.ant.BuildException;
 
 import net.lukemurphey.splunkbuild.SplunkTask;
 
@@ -31,14 +31,16 @@ public class SplunkAppInstall extends SplunkTask {
     /**
      * Perform the bump operation.
      */
-    public void execute() {
+    public void execute() throws BuildException{
     	
         try{
             installApp(this.appname, this.splunkweburl, this.username, this.password);
         }
+        catch(BuildException e){
+            throw e;
+        }
         catch(Exception e){
-            log(e.toString());
-        	handleErrorOutput("Unable to install the Splunk app");
+        	throw new BuildException("Unable to install the Splunk app due to an exception: " + e.toString());
         }
         
     }
@@ -59,7 +61,7 @@ public class SplunkAppInstall extends SplunkTask {
     /**
      * Tell Splunk to restart.
      */
-    public boolean installApp(String app, String url, String username, String password) throws Exception {
+    public void installApp(String app, String url, String username, String password) throws Exception {
 
     	// Remove the trailing slash on the URL if necessary
         url = removeTrailingSlash(url);
@@ -81,12 +83,11 @@ public class SplunkAppInstall extends SplunkTask {
         int responseCode = connection.getResponseCode();
 
         if(responseCode == 200 || responseCode == 201){
-        	return true;
+        	log("App successfully installed");
         }
         else{
-            handleErrorOutput("App could not be installed (returned " + responseCode + ")");
-            outputResponse(connection);
-            return false;
+            throw new BuildException("App could not be installed (returned " + responseCode + ")");
+            //outputResponse(connection);
         }
 
     }

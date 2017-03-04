@@ -1,10 +1,14 @@
 package net.lukemurphey.splunkbuild;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Base64;
 
+import org.apache.tools.ant.BuildException;
 import net.lukemurphey.splunkbuild.SplunkTask;
 
 /**
@@ -18,14 +22,16 @@ public class SplunkRestart extends SplunkTask {
     /**
      * Perform the Splunk restart operation.
      */
-    public void execute() {
+    public void execute() throws BuildException{
     	
         try{
             restartSplunk(this.splunkweburl, this.username, this.password);
         }
+        catch(BuildException e){
+            throw e;
+        }
         catch(Exception e){
-        	handleErrorOutput("Unable to restart Splunk due to an exception");
-            log(e.toString());
+        	throw new BuildException("Unable to restart Splunk due to an exception: " + e.toString());
         }
         
     }
@@ -44,76 +50,36 @@ public class SplunkRestart extends SplunkTask {
     /**
      * Tell Splunk to restart.
      */
-    public boolean restartSplunk(String url, String username, String password) throws Exception {
+    public void restartSplunk(String url, String username, String password) throws NoSuchAlgorithmException, ProtocolException, MalformedURLException, IOException, KeyManagementException {
 
     	// Remove the trailing slash on the URL if necessary
         url = removeTrailingSlash(url);
     	
         installSSLValidator();
 
-        // Do the restart
-        HttpURLConnection restartConnection = (HttpURLConnection) new URL("https://127.0.0.1:8089/services/server/control/restart").openConnection();
-        restartConnection.setRequestMethod("POST");
-        String userCredentials = username + ":" + password;
-        String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
-        restartConnection.setRequestProperty ("Authorization", basicAuth);
+        try{
 
-        restartConnection.setDoOutput(true);
-        
-        int responseCode = restartConnection.getResponseCode();
+            // Do the restart
+            HttpURLConnection restartConnection = (HttpURLConnection) new URL("https://127.0.0.1:8089/services/server/control/restart").openConnection();
+            restartConnection.setRequestMethod("POST");
+            String userCredentials = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
+            restartConnection.setRequestProperty ("Authorization", basicAuth);
 
-        if(responseCode == 200){
-            log("Restart request successfully sent");
-        	return true;
+            restartConnection.setDoOutput(true);
+            
+            int responseCode = restartConnection.getResponseCode();
+
+            if(responseCode == 200){
+                log("Restart request successfully sent");
+            }
+            else{
+                throw new BuildException("Splunk could not be restarted");
+            }
         }
-        else{
-            handleErrorOutput("Splunk could not be restarted)");
-            return false;
+        catch(SocketException e){
+            throw new BuildException("Unable to connect to Splunk (connection failed)");
         }
-    }
-
-    /**
-     * Tell Splunk to restart.
-     */
-    public boolean restartSplunk2(String url, String username, String password) throws Exception {
-
-    	// Remove the trailing slash on the URL if necessary
-        url = removeTrailingSlash(url);
-    	
-    	// Step 1: Log into Splunk
-    	loginToSplunk(url, username, password);
-
-        String formkey = getFormKey(url);
-
-        //log(formkey);
-        if(formkey == null){
-            return false;
-        }
-
-        log(formkey);
-
-        // Do the restart
-        HttpURLConnection restartConnection = (HttpURLConnection) new URL(url + "/en-US/api/manager/control").openConnection();
-        restartConnection.setRequestMethod("POST");
-
-        restartConnection.setRequestProperty("X-Splunk-Form-Key", formkey);
-
-        restartConnection.setRequestProperty( "Content-type", "application/x-www-form-urlencoded");
-        restartConnection.setRequestProperty( "Accept", "*/*" );
-        restartConnection.setDoOutput(true);
-        restartConnection.getOutputStream().write(getRestartFormBytes("restart_server"));
-        log(restartConnection.getRequestMethod());
-        int responseCode = restartConnection.getResponseCode();
-
-        if(responseCode == 200){
-            log("Restart request successfully sent");
-        	return true;
-        }
-        else{
-            handleErrorOutput("Splunk could not be restarted)");
-            return false;
-        }
-
     }
     
     /**
