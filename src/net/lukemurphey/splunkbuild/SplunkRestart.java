@@ -76,6 +76,12 @@ public class SplunkRestart extends SplunkTask {
             if(responseCode == 200){
                 log("Restart request successfully sent");
             }
+            else if(responseCode == 401){
+                throw new BuildException("Restart request could not be done since the account could not be authenticated (returned " + responseCode + "); make sure the account \"" + username + "\" can authenticate to " + url);
+            }
+            else if(responseCode == 403){
+                throw new BuildException("Restart request could not be done since it isn't authorized (returned " + responseCode + "); make sure the account \"" + username + "\" has the following capability: restart_splunkd");
+            }
             else{
                 throw new BuildException("Splunk could not be restarted");
             }

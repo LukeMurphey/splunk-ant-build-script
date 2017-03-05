@@ -63,10 +63,10 @@ public class SplunkWebBump extends SplunkTask {
             // Step 1: Log into Splunk
             loginToSplunk(url, username, password);
             
-            // Step 3: Do a GET to retrieve the form key
+            // Step 2: Do a GET to retrieve the form key
             String formKey = getFormKey(url);
             
-            // Step 4: Do the actual bump
+            // Step 3: Do the actual bump
             HttpURLConnection bumpConnection = (HttpURLConnection) new URL(url + "/en-US/_bump").openConnection();
             bumpConnection.setRequestMethod("POST");
             
@@ -77,9 +77,8 @@ public class SplunkWebBump extends SplunkTask {
             
             int responseCode = bumpConnection.getResponseCode();
             
-            if(responseCode == 401){
-                handleErrorOutput("Bump request failed (unauthorized)");
-                return;
+            if(responseCode == 403){
+                throw new BuildException("Bump request could not be done since it isn't authorized (returned " + responseCode + "); make sure the account \"" + username + "\" has the following capability: web_debug");
             }
             
             // Get the new bumped value

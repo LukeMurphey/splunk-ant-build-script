@@ -88,7 +88,16 @@ public class SplunkAppInstall extends SplunkTask {
         	log("App successfully installed");
         }
         else{
-            throw new BuildException("App could not be installed (returned " + responseCode + ")");
+
+            if(responseCode == 401){
+                throw new BuildException("App could not be installed since the account could not be authenticated (returned " + responseCode + "); make sure the account \"" + username + "\" can authenticate to " + url);
+            }
+            else if(responseCode == 403){
+                throw new BuildException("App could not be installed since it isn't authorized (returned " + responseCode + "); make sure the account \"" + username + "\" has the following capabilities: rest_apps_management, admin_all_objects");
+            }
+            else{
+                throw new BuildException("App could not be installed (returned " + responseCode + ")");
+            }
             //outputResponse(connection);
         }
 

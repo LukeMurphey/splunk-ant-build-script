@@ -1,6 +1,7 @@
 package net.lukemurphey.splunkbuild;
 
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -172,7 +173,7 @@ public class SplunkTask extends Task {
     /**
      * Log into SplunkWeb. This has a side-effect of having HttpURLConnection class retain the cookie necessary to be considered logged in.
      **/
-    public boolean loginToSplunk(String url, String username, String password) throws Exception {
+    public void loginToSplunk(String url, String username, String password) throws BuildException, IOException, MalformedURLException {
 
     	// Step 1: Perform a request in order to get the cval cookie
     	String cval = this.getCval(url);
@@ -187,13 +188,9 @@ public class SplunkTask extends Task {
         loginConnection.getOutputStream().write(getLoginFormBytes(cval, username, password));
         
         int responseCode = loginConnection.getResponseCode();
-        
+
         if(responseCode == 401){
-        	handleErrorOutput("Login to Splunk failed");
-        	return false;
-        }
-        else{
-            return true;
+        	throw new BuildException("Bump request could not be done since the account could not be authenticated (returned " + responseCode + "); make sure the account \"" + username + "\" can authenticate to " + url);
         }
     }
 
