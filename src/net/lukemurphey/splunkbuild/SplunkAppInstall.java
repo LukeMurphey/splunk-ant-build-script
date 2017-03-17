@@ -48,12 +48,13 @@ public class SplunkAppInstall extends SplunkTask {
     /**
      * Get the encoded data for the Splunk install app form.
      */
-    public byte[] getInstallFormBytes(String app) throws UnsupportedEncodingException{
+    public byte[] getInstallFormBytes(String app, boolean isFilename) throws UnsupportedEncodingException{
     	
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("name", app);
         params.put("output_mode", "json");
         params.put("update", "true");
+        params.put("filename", "true");
         
         return this.getFormBytes(params);
     }
@@ -71,7 +72,7 @@ public class SplunkAppInstall extends SplunkTask {
         installSSLValidator();
 
         // Do the restart
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://127.0.0.1:8089/services/apps/appinstall").openConnection();
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://127.0.0.1:8089/services/apps/local").openConnection();
         connection.setRequestMethod("POST");
         String userCredentials = username + ":" + password;
         String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
@@ -80,7 +81,7 @@ public class SplunkAppInstall extends SplunkTask {
         connection.setRequestProperty( "Content-type", "application/x-www-form-urlencoded");
         connection.setRequestProperty( "Accept", "*/*" );
         connection.setDoOutput(true);
-        connection.getOutputStream().write(getInstallFormBytes(app));
+        connection.getOutputStream().write(getInstallFormBytes(app, true));
         
         int responseCode = connection.getResponseCode();
 
