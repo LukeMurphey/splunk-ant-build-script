@@ -60,6 +60,7 @@ Here are some other supported variables:
 ║ value.build.package.username ║ PACKAGE_USERNAME     ║ The username to use when downloading the package (if it was a URL)                                                        ║                                              ║
 ║ value.build.package.password ║ PACKAGE_PASSWORD     ║ The password to use when downloading the package                                                                          ║                                              ║
 ║ skip_bump                    ║                      ║ Indicates if the build script shouldn't try to bump the web-server in order to prevent SplunkWeb from returning old files ║                                              ║
+║ value.build.test.directory   ║ TEST_DIRECTORY       ║ Indicates where the tests reside                                                                                          ║                                              ║
 ╚══════════════════════════════╩══════════════════════╩═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╩══════════════════════════════════════════════╝
 
 ======================================================
@@ -138,6 +139,7 @@ You can also use ${value.version.number} to substitute your version number in ap
 	<import_environment_var property="value.build.package.file" variable="PACKAGE_FILE" />
 	<import_environment_var property="value.build.package.username" variable="PACKAGE_USERNAME" />
 	<import_environment_var property="value.build.package.password" variable="PACKAGE_PASSWORD" />
+	<import_environment_var property="value.build.test.directory" variable="TEST_DIRECTORY" />
 	
 	<!-- Import the default properties -->
     <property file="default.properties" />
@@ -149,6 +151,7 @@ You can also use ${value.version.number} to substitute your version number in ap
 	<property name="value.deploy.splunkd_url" value="https://127.0.0.1:8089" />
 	<property name="value.deploy.splunk_username" value="admin" />
 	<property name="value.deploy.splunk_password" value="changeme" />
+	<property name="value.build.test.directory" value="tests" />
 	
     <!-- Set up some basic properties that are internal to this build script -->
     <property name="value.src.directory" value="src" />
@@ -878,9 +881,7 @@ Below is an example of the entry in the file:
           target: splunk.install_api
          ================================= -->
 	<target name="splunk.install_api" description="Installs the package into Splunk using the REST API" depends="verify_splunkd_url,initialize_libraries,resolve_package_file">
-
 		<splunkappinstall name="${absolute_package_file}" url="${value.deploy.splunkd_url}" username="${value.deploy.splunk_username}" password="${value.deploy.splunk_password}"/>
-		
 	</target>
 
 	<!-- ================================= 
@@ -888,45 +889,48 @@ Below is an example of the entry in the file:
          ================================= -->
 	<target name="splunk.install_and_restart" description="Builds the package, installs it, and restarts Splunk" depends="splunk.install,splunk.restart"/>
 
+    <!-- Define a macro that can be used for refreshing Splunk endpoints -->
+    <macrodef name="reload_conf">
+    	<attribute name="endpoint"/>
+    	<sequential>
+    		<exec failonerror="true" executable="${value.deploy.splunk_home}/bin/splunk"> <!-- Fail on error is set to true -->
+    			<arg value="_internal"/>
+    			<arg value="call"/>
+    			<arg value="/admin/@{endpoint}/_reload"/>
+    			<arg value="-auth"/>
+    			<arg value="${value.deploy.splunk_username}:${value.deploy.splunk_password}"/>
+    			<arg value="--accept-license"/>
+    		</exec>
+    	</sequential>
+    </macrodef>
+
     <!-- ================================= 
           target: splunk.refresh
          ================================= -->
     <target name="splunk.refresh" description="Refresh Splunk" depends="verify_splunk_home">
-
-      	<!-- Define a macro that can be used for refreshing Splunk endpoints -->
-      	<macrodef name="reload_conf">
-    		<attribute name="endpoint"/>
-    		<sequential>
-    			<exec failonerror="true" executable="${value.deploy.splunk_home}/bin/splunk"> <!-- Fail on error is set to true -->
-    				<arg value="_internal"/>
-    				<arg value="call"/>
-    				<arg value="/admin/@{endpoint}/_reload"/>
-    				<arg value="-auth"/>
-    				<arg value="${value.deploy.splunk_username}:${value.deploy.splunk_password}"/>
-    				<arg value="--accept-license"/>
-    			</exec>
-    		</sequential>
-      	</macrodef>
-    	
     	<reload_conf endpoint="savedsearch" />
     	<reload_conf endpoint="nav" />
     	<reload_conf endpoint="views" />
-    	
     </target>
 	
     <!-- ================================= 
-          target: test.deploy_and_run_unit
+          target: test.deploy_and_run
          ================================= -->
-    <target name="test.deploy_and_run_unit" description="Deploys the application and runs tests" depends="verify_splunk_home,skip_bump,deploy,test.run_unit" />
+    <target name="test.deploy_and_run" description="Deploys the application and runs tests" depends="verify_splunk_home,skip_bump,deploy,test.run" />
 	
     <!-- ================================= 
-          target: test.run_unit
+          target: test.run
          ================================= -->
-    <target name="test.run_unit" description="Run unit tests" depends="verify_splunk_home">
-        <exec failonerror="true" executable="${value.deploy.splunk_home}/bin/splunk" dir="${basedir}/tests">
+    <target name="test.run" description="Run tests" depends="verify_splunk_home">
+        <exec failonerror="true" executable="${value.deploy.splunk_home}/bin/splunk">
         	<arg line="cmd" />
         	<arg line="python" />
-        	<arg line="unit.py" />
+        	<arg line="-m" />
+			<arg line="unittest" />
+			<arg line="discover" />
+			<arg line="${value.build.test.directory}" />
+			<arg line="-p" />
+			<arg line="*.py" />
         </exec>
     </target>
 
