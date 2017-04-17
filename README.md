@@ -1,4 +1,4 @@
-# splunk-ant-build-script
+# Splunk Ant Build Script
 
 ## What is this?
 
@@ -88,3 +88,65 @@ Now, make or place your source-code for app in the src/ directory. The code in h
 * **build.xml** (the main build script; place overrides of the build script in this file)
 * **default.properties** (where properties go that need to be included in the source-code repository)
 * **local.properties** (where properties go that should _not_ be included in the source-code repository)
+
+## What else can I do?
+
+Now that you have your script setup, let's consider some other things you can do with it.
+
+To use these targets, you should define the home directory of your Splunk install.
+
+To set this up, edit _local.properties_ and define splunk_home. Something like this:
+
+<pre>
+value.deploy.splunk_home=/opt/splunk/
+</pre>
+
+This will allow the build script to control Splunk via the CLI.
+
+Alternatively, you can have the build script control your Splunk install by accessing it over splunkd's REST endpoints. By default, the build script will assume your Splunk install is running locally (IP address of 127.0.0.1). You can customize this to have the build script control a non-local instance like such:
+
+<pre>
+value.deploy.splunkd_url=https://mysplunkinstall:8089
+value.deploy.splunkweb_url=http://mysplunkinstall:8000
+
+value.deploy.splunk_username=admin
+value.deploy.splunk_password=opensesame
+</pre>
+
+### Copy your source-code to a running Splunk install
+
+The build script can copy your app files to a running Splunk install. It will also bump SplunkWeb so that edited Javascript files, stylesheets, and html files will show up instantly.
+
+Then, run "deploy" to copy your appto your Splunk install:
+
+<pre>
+ant deploy
+</pre>
+
+### Control Splunk (start, restart, etc.)
+
+You can use the build script to control your running Splunk install. For example, you can have the build restart your Splunk install by running:
+
+<pre>
+ant splunk.restart
+</pre>
+
+Here are some other related targets:
+* splunk.stop
+* splunk.start
+* splunk.restart
+* splunk.restart_web (restarts just SplunkWeb)
+* splunk.install (this builds your Splun app and installs your app into Splunk)
+* splunk.deploy_and_refresh (copies your files to your Splunk install and refreshes several conf files so that the changes show up instantly)
+* splunk.deploy_and_restart
+
+There are also targets specific to whether you want to do the operation using Splunk CLI tools or whether you would prefer the build script to use the REST APIs. The build script automatically pick which ones to use based on your configuration but you can manually run the target to force the use of the API or CLI.
+
+Here are the ones that are use the APIs specifically:
+* splunk.install_api
+* splunk.restart_api
+
+Here are the ones that use the CLI specifically:
+* splunk.install_cli
+* splunk.restart_cli
+
