@@ -65,7 +65,7 @@ public class SplunkRestart extends SplunkTask {
 
         long seconds = (currentTime - startTime)/1000000000;
 
-        return ((float)Math.round(seconds * 10))/10.0 + "s";
+        return Math.round(seconds) + "s";
     }
 
     public void waitUntilURLIsUp(String url, int maxSeconds, boolean waitForBounce, boolean requireBounce) throws IOException{
