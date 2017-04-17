@@ -322,7 +322,7 @@ You can customize the build process by placing properties in the default.propert
     <!-- ================================= 
           target: get_build_number
          ================================= -->
-	<target name="get_build_number">
+	<target name="get_build_number" depends="initialize_libraries">
 		
 		<macrodef name="get_build_info">
 			<attribute name="path" default="${user.dir}" />
@@ -341,18 +341,43 @@ You can customize the build process by placing properties in the default.propert
 			
 		</macrodef>
 		
-   		<!-- Run git to get the revision number and date -->
-		<get_build_info outputproperty="value.build.number" />
-		<get_build_info format="cD" outputproperty="value.build.date" />
-		
+		<!-- Determine if this project is using Git and get the build info accordingly -->
+		<if>
+			<available file=".git" type="dir" />
+
+			<!-- Run git to get the revision number and date -->
+			<then>
+				
+				<get_build_info outputproperty="value.build.number" />
+				<get_build_info format="cD" outputproperty="value.build.date" />
+				
+				
+			</then>
+
+			<!-- Generate the revision number and date -->
+			<else>
+				<echo message=".git directory does not exist; build date will be set to the current date" />
+
+				<tstamp>
+					<!--  1492116038 (Thu, 13 Apr 2017 15:40:38 -0500) -->
+					<format property="value.build.date" pattern="E, d MMM YYYY HH:mm:ss Z" unit="hour" />
+				</tstamp>
+
+				  <script language="javascript">
+					<![CDATA[
+						property = project.setProperty("value.build.number",Math.floor((new Date()).getTime()/1000));
+					]]>
+			      </script>
+			</else>
+		</if>
+
 		<echo>Revision number is: ${value.build.number} (${value.build.date})</echo>
-		
 	</target>
     
     <!-- ================================= 
           target: clean.packages
          ================================= -->
-    <target name="clean.packages" description="Clean up the packages created by this build script" >
+    <target name="clean.packages" description="Clean up the packages created by this build script">
         <delete quiet="true" includeEmptyDirs="true">
             <fileset dir="tmp/packages" />
         </delete>

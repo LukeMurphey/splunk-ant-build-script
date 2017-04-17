@@ -36,9 +36,12 @@ Total time: 0 seconds
 
 You need the following to use this build script:
 
-1. Git: this build script is based around git (e.g. Github, Gitlab, Atlassian Bitbucket). Thus, you will need to customize it if you want to use another type of source code repository.
-2. Ant: this build script uses Apache Ant and thus you will need to install it (see instructions below for some more information)
-3. Java: Ant runs on Java and thus you will need to have Java installed (their is a good chance you already do)
+1. Ant: this build script uses Apache Ant and thus you will need to install it (see instructions below for some more information)
+2. Java: Ant runs on Java and thus you will need to have Java installed (their is a good chance you already do)
+
+Here are some optional dependencies:
+
+3. Git: this build script is based around git (e.g. Github, Gitlab, Atlassian Bitbucket) and will create a build number and date based off the latest git commit. If you don't have git, the script will make assign a build date and a build number based on the current date.
 
 ## How do I use it?
 
