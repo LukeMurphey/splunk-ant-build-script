@@ -274,8 +274,8 @@ You can customize the build process by placing properties in the default.propert
 			 verbose="true"
 			 skipexisting="true" />
 		
-		<get src="https://github.com/LukeMurphey/splunk-ant-build-script/releases/download/1.0.1/splunkdevtools-1.0.1.jar" 
-			 dest="${absolute_lib_path}/splunkdevtools-1.0.1.jar" 
+		<get src="https://github.com/LukeMurphey/splunk-ant-build-script/releases/download/1.1/splunkdevtools-1.1.jar" 
+			 dest="${absolute_lib_path}/splunkdevtools-1.1.jar" 
 			 verbose="true"
 			 skipexisting="true" />
 		
@@ -291,9 +291,9 @@ You can customize the build process by placing properties in the default.propert
 		     </classpath>
 		</taskdef>
 		
-		<taskdef name="splunkwebbump" classname="net.lukemurphey.splunkbuild.SplunkWebBump" classpath="${absolute_lib_path}/splunkdevtools-1.0.1.jar" />
-		<taskdef name="splunkrestart" classname="net.lukemurphey.splunkbuild.SplunkRestart" classpath="${absolute_lib_path}/splunkdevtools-1.0.1.jar" />
-		<taskdef name="splunkappinstall" classname="net.lukemurphey.splunkbuild.SplunkAppInstall" classpath="${absolute_lib_path}/splunkdevtools-1.0.1.jar" />
+		<taskdef name="splunkwebbump" classname="net.lukemurphey.splunkbuild.SplunkWebBump" classpath="${absolute_lib_path}/splunkdevtools-1.1.jar" />
+		<taskdef name="splunkrestart" classname="net.lukemurphey.splunkbuild.SplunkRestart" classpath="${absolute_lib_path}/splunkdevtools-1.1.jar" />
+		<taskdef name="splunkappinstall" classname="net.lukemurphey.splunkbuild.SplunkAppInstall" classpath="${absolute_lib_path}/splunkdevtools-1.1.jar" />
 	</target>
 	
     <!-- ================================= 
@@ -315,7 +315,7 @@ You can customize the build process by placing properties in the default.propert
     	<delete file="${absolute_lib_path}/ant-contrib-0.6.jar" />
     	<delete file="${absolute_lib_path}/yuicompressor-2.4.7.jar" />
     	<delete file="${absolute_lib_path}/yuicompressor-2.4.8.jar" />
-    	<delete file="${absolute_lib_path}/splunkdevtools-1.0.1.jar" />
+    	<delete file="${absolute_lib_path}/splunkdevtools-1.1.jar" />
         
     </target>
 	
