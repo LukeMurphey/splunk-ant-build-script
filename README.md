@@ -34,7 +34,11 @@ Total time: 0 seconds
 
 ## Requirements
 
-This build script is based around git (e.g. Github, Gitlab, Atlassian Bitbucket). Thus, you will need to customize it if you want to use another type of source code repository.
+You need the following to use this build script:
+
+1. Git: this build script is based around git (e.g. Github, Gitlab, Atlassian Bitbucket). Thus, you will need to customize it if you want to use another type of source code repository.
+2. Ant: this build script uses Apache Ant and thus you will need to install it (see instructions below for some more information)
+3. Java: Ant runs on Java and thus you will need to have Java installed (their is a good chance you already do)
 
 ## How do I use it?
 
@@ -42,7 +46,7 @@ This build script is based around git (e.g. Github, Gitlab, Atlassian Bitbucket)
 
 Install Java if you don't have it installed. There is a good chance you already have it so you may want to check.
 
-Next, install Ant
+Next, install Ant. See http://ant.apache.org/bindownload.cgi for details.
 
 ### Download the build script
 
