@@ -1116,11 +1116,13 @@ Below is an example of the entry in the file:
 					<arg line="${value.build.package.file}" />
 				</exec>
 			</then>
+
  			<!-- Tell the user that they need to install appinspect -->
 			<else>
 				<echo>appinspect was not found.
 Install appinspect from http://dev.splunk.com/view/appinspect/SP-CAAAFAK if you haven't already.
- You can declare the "value.test.appinspect_path" parameter with the path where appinspect is installed if isn't on your system path.
+
+You can declare the "value.test.appinspect_path" parameter with the path where appinspect is installed if isn't on your system path.
 Declare it in a local.properties file in the following path:
      ${absolute_src_path}/local.properties
 </echo>
