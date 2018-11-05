@@ -84,8 +84,8 @@ Below are the main build targets you should consider using:
 ║ splunk.stop                ║ Stops Splunk                                                                ║ value.deploy.splunk_home ║
 ║ splunk.restart             ║ Restarts Splunk                                                             ║ value.deploy.splunk_home ║
 ║ splunk.restart_web         ║ Restarts SplunkWeb                                                          ║ value.deploy.splunk_home ║
-║ splunk.run_unit            ║ Runs unit tests                                                             ║ value.deploy.splunk_home ║
-║ splunk.deploy_and_run_unit ║ Same as above but deploys to Splunk first so that it has the latest changes ║ value.deploy.splunk_home ║
+║ test.run_unit              ║ Runs unit tests                                                             ║ value.deploy.splunk_home ║
+║ test.deploy_and_run_unit   ║ Same as above but deploys to Splunk first so that it has the latest changes ║ value.deploy.splunk_home ║
 ╚════════════════════════════╩═════════════════════════════════════════════════════════════════════════════╩══════════════════════════╝
 
 ======================================================
