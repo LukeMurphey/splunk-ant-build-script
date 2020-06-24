@@ -443,16 +443,18 @@ You can customize the build process by placing properties in the default.propert
     </target>
     
 	<patternset id="substituted_files">
-    	<include name="**/*.conf" />
-        <include name="**/*.txt" />
-        <include name="**/*.xml" />
-    </patternset>
+		<include name="**/*.conf" />
+		<include name="**/*.txt" />
+		<include name="**/*.xml" />
+		<include name="**/app.manifest" />
+	</patternset>
 
 	<patternset id="exclude_substituted_files">
-    	<exclude name="**/*.conf" />
-        <exclude name="**/*.txt" />
-        <exclude name="**/*.xml" />
-    </patternset>
+		<exclude name="**/*.conf" />
+		<exclude name="**/*.txt" />
+		<exclude name="**/*.xml" />
+		<exclude name="**/app.manifest" />
+	</patternset>
 
 	<patternset id="minified_files">
     	<include name="**/*.js" />
