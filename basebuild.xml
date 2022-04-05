@@ -564,9 +564,14 @@ You can customize the build process by placing properties in the default.propert
 	</target>
 	
     <!-- ================================= 
+          target: compile
+         ================================= -->
+    <target name="compile"/>
+
+    <!-- ================================= 
           target: package
          ================================= -->
-    <target name="package" depends="initialize_properties,setup_tmp_directory_for_export,set_minimize_for_package,populate_export_dir" description="Create the Splunk package of the app">
+    <target name="package" depends="initialize_properties,setup_tmp_directory_for_export,set_minimize_for_package,populate_export_dir,compile" description="Create the Splunk package of the app">
         
         <!-- Make the directory where we will store the files -->
         <mkdir dir="${value.build.packageoutput.directory}" />
