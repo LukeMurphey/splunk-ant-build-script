@@ -443,18 +443,16 @@ You can customize the build process by placing properties in the default.propert
     </target>
     
 	<patternset id="substituted_files">
-		<include name="**/*.conf" />
-		<include name="**/*.txt" />
-		<include name="**/*.xml" />
-		<include name="**/app.manifest" />
-	</patternset>
+    	<include name="**/*.conf" />
+        <include name="**/*.txt" />
+        <include name="**/*.xml" />
+    </patternset>
 
 	<patternset id="exclude_substituted_files">
-		<exclude name="**/*.conf" />
-		<exclude name="**/*.txt" />
-		<exclude name="**/*.xml" />
-		<exclude name="**/app.manifest" />
-	</patternset>
+    	<exclude name="**/*.conf" />
+        <exclude name="**/*.txt" />
+        <exclude name="**/*.xml" />
+    </patternset>
 
 	<patternset id="minified_files">
     	<include name="**/*.js" />
@@ -469,7 +467,7 @@ You can customize the build process by placing properties in the default.propert
     <!-- ================================= 
           target: populate_export_dir
          ================================= -->
-    <target name="populate_export_dir" depends="initialize,get_build_number">
+    <target name="populate_export_dir" depends="initialize,get_build_number,compile">
     	
     	<!-- Make sure that the source directory exists -->
     	<fail message="The directory where the source-code is supposed to be doesn't exist ('${absolute_src_path}')">
@@ -562,16 +560,16 @@ You can customize the build process by placing properties in the default.propert
 	<target name="set_minimize_for_package" depends="initialize_properties">
 		<property name="minimize" value="${value.build.minimize}"/>
 	</target>
-	
-    <!-- ================================= 
-          target: compile
-         ================================= -->
-    <target name="compile"/>
 
+    <!-- ================================= 
+          target: compile target for any custom compilation things needed
+         ================================= -->
+	<target name="compile" depends="initialize_properties" />
+	
     <!-- ================================= 
           target: package
          ================================= -->
-    <target name="package" depends="initialize_properties,setup_tmp_directory_for_export,set_minimize_for_package,populate_export_dir,compile" description="Create the Splunk package of the app">
+    <target name="package" depends="initialize_properties,setup_tmp_directory_for_export,set_minimize_for_package,populate_export_dir" description="Create the Splunk package of the app">
         
         <!-- Make the directory where we will store the files -->
         <mkdir dir="${value.build.packageoutput.directory}" />
@@ -1069,7 +1067,7 @@ Below is an example of the entry in the file:
     <!-- ================================= 
           target: test.run_unit
          ================================= -->
-    <target name="test.run_unit">
+    <target name="test.run_unit" depends="test.setup">
 
 		<!-- Define a default value for the tests to run. Otherwise, arguments passed from the CLI will be used (e.g. ant test.run_unit -Dtest=TestPingParser) -->
 		<property name="test" value="" />
@@ -1131,7 +1129,7 @@ Below is an example of the entry in the file:
 			<isset property="appinspect.present"/>
  			<!-- Run appinspect on the package -->
 			<then>
-				<exec failonerror="true" executable="${value.test.appinspect_path}" dir="${basedir}">
+				<exec failonerror="true" executable="${value.test.appinspect_path}" dir="${value.build.packageoutput.directory}">
 					<arg line="inspect" />
 					<arg line="${value.build.package.absolute_file}" />
 				</exec>
